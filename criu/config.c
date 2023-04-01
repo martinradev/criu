@@ -431,6 +431,7 @@ void init_opts(void)
 	opts.file_validation_method = FILE_VALIDATION_DEFAULT;
 	opts.network_lock_method = NETWORK_LOCK_DEFAULT;
 	opts.ghost_fiemap = FIEMAP_DEFAULT;
+	opts.seccomp_skip_rules_insecure = 0;
 }
 
 bool deprecated_ok(char *what)
@@ -703,6 +704,7 @@ int parse_options(int argc, char **argv, bool *usage_error, bool *has_exec_cmd, 
 		BOOL_OPT("mntns-compat-mode", &opts.mntns_compat_mode),
 		BOOL_OPT("unprivileged", &opts.unprivileged),
 		BOOL_OPT("ghost-fiemap", &opts.ghost_fiemap),
+		{ "seccomp-skip-rules-insecure", no_argument, 0, 1104 },
 		{},
 	};
 
@@ -1041,6 +1043,9 @@ int parse_options(int argc, char **argv, bool *usage_error, bool *has_exec_cmd, 
 				return 1;
 			}
 			break;
+		case 1104:
+			opts.seccomp_skip_rules_insecure = 1;
+			break;
 		case 'V':
 			pr_msg("Version: %s\n", CRIU_VERSION);
 			if (strcmp(CRIU_GITID, "0"))
@@ -1081,6 +1086,8 @@ int check_options(void)
 		pr_info("Will allow link remaps on FS\n");
 	if (opts.weak_sysctls)
 		pr_info("Will skip non-existent sysctls on restore\n");
+	if (opts.seccomp_skip_rules_insecure)
+		pr_warn("Will skip collecting and restoring seccomp rules\n");
 
 	if (opts.deprecated_ok)
 		pr_info("Turn deprecated stuff ON\n");

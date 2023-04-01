@@ -122,6 +122,7 @@ enum criu_mode {
 };
 
 struct cr_options {
+	int seccomp_skip_rules_insecure;
 	int final_state;
 	int check_extra_features;
 	int check_experimental_features;

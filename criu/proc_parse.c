@@ -1131,6 +1131,11 @@ int parse_pid_status(pid_t pid, struct seize_task_status *ss, void *data)
 			if (sscanf(str + 9, "%d", &cr->s.seccomp_mode) != 1) {
 				goto err_parse;
 			}
+			if (opts.seccomp_skip_rules_insecure) {
+				pr_warn("Overriding original seccomp mode from '%u' to SECCOMP_MODE_DISABLED\n",
+					cr->s.seccomp_mode);
+				cr->s.seccomp_mode = SECCOMP_MODE_DISABLED;
+			}
 
 			parsed_seccomp = true;
 			done++;
